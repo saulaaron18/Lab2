@@ -60,21 +60,21 @@ public class Polinomio {
 		}
 		PositionList<Monomio> polinomioResultante = new NodePositionList<>();
 		String[] arrayPol = polinomio.split("\\+");
-		
+
 		for(int i=0;i<arrayPol.length;i++) {
 			arrayPol[i] = arrayPol[i].trim();
-			
+
 			int coef = coeficiente(arrayPol[i]);
 			if(coef==0) continue;
 			int exp = exponente(arrayPol[i]);
-			
+
 			polinomioResultante.addLast(new Monomio(coef, exp));
 		}
-		
+
 		terms = polinomioResultante;
 	}
-	
-	
+
+
 
 	/**
 	 * Suma dos polinomios.
@@ -103,7 +103,15 @@ public class Polinomio {
 	 * @return el producto de los polinomios.
 	 */
 	public static Polinomio multiplica(Polinomio p1, Polinomio p2) {
-		return null;
+		Polinomio acum = new Polinomio();
+		Position<Monomio> cursor = p1.terms.first();
+		
+		while(cursor != null){
+			acum = suma(acum,multiplica(cursor.element(),p2));
+			cursor = p1.terms.next(cursor);
+		}
+		
+		return acum;
 	}
 
 	/**
@@ -113,7 +121,16 @@ public class Polinomio {
 	 * @return el producto del monomio y el polinomio
 	 */
 	public static Polinomio multiplica(Monomio m, Polinomio p) {
-		return null;
+		Position<Monomio> cursor = p.terms.first();
+		Polinomio res = new Polinomio();
+		
+		while(cursor != null){
+			res.terms.addLast(new Monomio(m.coeficiente()*cursor.element().coeficiente(),
+					m.exponente()+cursor.element().exponente()));
+			cursor = p.terms.next(cursor);
+		}
+		
+		return res;
 	}
 
 	/**
@@ -210,7 +227,7 @@ public class Polinomio {
 		return pol.terms.equals(this.terms);
 	}
 
-	
+
 	// Métodos privados de los ejercicios obligatorios
 	private static Polinomio sumaResta(Polinomio p1, Polinomio p2, boolean esSuma) {
 		PositionList<Monomio> resultado = new NodePositionList<>();
@@ -264,33 +281,33 @@ public class Polinomio {
 	private static Position<Monomio> primero(Polinomio p) {
 		return (p.terms.isEmpty()) ? null : p.terms.first();
 	}
-	
+
 	// Metodos Privados para el Constructor (ejercicio opcional)
 	private int coeficiente(String mon) {
 		boolean esNegativo = mon.startsWith("-");
 		int cotaInferior = (esNegativo) ? 1 : 0;
 		int cotaSuperior = mon.indexOf("x");
-		
+
 		if(cotaInferior==cotaSuperior) {
 			return (esNegativo) ? -1 : 1;
 		}
-		
+
 		return Integer.parseInt(
 				mon.substring(0, 
 						(cotaSuperior<cotaInferior) ? mon.length() : cotaSuperior));
 	}
-	
+
 	private int exponente(String mon) {
 		int indexSymbExp = mon.indexOf("^");
-		
+
 		if(indexSymbExp != -1) {
 			return Integer.parseInt(mon.substring(indexSymbExp+1, mon.length()));
 		}
-		
+
 		if(mon.contains("x")) {
 			return 1;
 		}
-		
+
 		return 0;
 	}
 }
